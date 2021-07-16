@@ -1,0 +1,4 @@
+rootProject.name = 'jpaplus'
+include 'core'
+include 'generator'
+
