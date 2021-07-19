@@ -47,7 +47,7 @@ buildscript {
     }
 }
 
-description = "jpa 增强包，简化条件查询，联表查询"
+description = "jpa 增强包，简化条件查询"
 
 subprojects {
     apply plugin: 'java-library'
@@ -65,20 +65,10 @@ subprojects {
         jcenter()
     }
 
-//    dependencies {
-//        testImplementation "${lib["assertj-core"]}"
-//        testImplementation "${lib["junit-jupiter"]}"
-//        testImplementation "org.mockito:mockito-junit-jupiter:3.11.0"
-//        testImplementation "${lib["lagarto"]}"
-//        testImplementation "${lib["logback-classic"]}"
-//    }
     dependencies {
         compile("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
         testCompile "mysql:mysql-connector-java:${mysqlVersion}"
         testCompile("com.alibaba:druid-spring-boot-starter:${druidVersion}")
-
-//        compile("org.apache.commons:commons-lang3:${commonsLangVersion}")
-//        compile("commons-beanutils:commons-beanutils:${commonsBeanutilsVersion}")
     }
 
     tasks.withType(JavaCompile) {

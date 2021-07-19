@@ -17,7 +17,7 @@ import javax.persistence.Id;
 public class User {
     @Id
     @GeneratedValue(generator = "strategy",strategy = GenerationType.AUTO)
-    @GenericGenerator(name = "strategy",strategy = "com.ct.wrapper.ManulInsertGenerator")
+    @GenericGenerator(name = "strategy",strategy = "com.ct.condition.ManulInsertGenerator")
     private Long id;
     private String username;
     private String realname;

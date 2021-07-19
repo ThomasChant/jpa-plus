@@ -1,6 +1,7 @@
 package com.ct.condition;
 
 import com.ct.condition.core.Conditions;
+import com.ct.condition.core.SimpleLambdaCondition;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -192,4 +193,13 @@ public class LambdaConditionTest {
         all = userRepository.findAll(spec);
         Assert.assertEquals(1, all.size());
     }
+
+    @Test
+    public void testSeparate(){
+        SimpleLambdaCondition<User> condition = Conditions.lambdaUse(User.class)
+                .eq(User::getId, 1);
+        Specification<User> spec = condition.or(i -> i.eq(User::getId, 2)).toSpec();
+        Assert.assertEquals(2, userRepository.findAll(spec).size());
+    }
+
 } 

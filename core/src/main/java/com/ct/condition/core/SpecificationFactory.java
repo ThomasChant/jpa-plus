@@ -14,10 +14,19 @@ import java.util.stream.Collectors;
  * @author chentao
  */
 @SuppressWarnings("unchecked")
-public final class SpecificationFactory {
+final class SpecificationFactory {
+
+    /**
+     * 创建Specification 静态工厂方法
+     * @param handler
+     * @param fieldName
+     * @param val
+     * @param <T>
+     * @return
+     */
     public static <T> Specification<T> createSpec(Handler handler, String fieldName, Object val) {
         if (fieldName == null) {
-            throw new IllegalArgumentException("fieldName cannot null");
+            throw JpaMinusException.getException("fieldName cannot null");
         }
         if (val == null && handler != Handler.IS_NOT_NULL && handler != Handler.IS_NULL) {
             return null;
@@ -75,12 +84,8 @@ public final class SpecificationFactory {
                         Collection notEmptyList = (List) ((Collection) val).stream()
                                 .filter(Objects::nonNull).collect(Collectors.toList());
                         return path.in(notEmptyList);
-                    } else if (val.getClass().isArray()) {
-                        List notEmptyList = Arrays.stream(ArrayUtil.toArray(val))
-                                .filter(Objects::nonNull).collect(Collectors.toList());
-                        return path.in(notEmptyList);
                     } else {
-                        throw new IllegalArgumentException("Value Must be Collection or Array Instance!");
+                        throw JpaMinusException.getException("Value Must be Collection Instance!");
                     }
                 };
             }
@@ -91,12 +96,8 @@ public final class SpecificationFactory {
                         Collection notEmptyList = (List) ((Collection) val).stream()
                                 .filter(Objects::nonNull).collect(Collectors.toList());
                         return path.in(notEmptyList).not();
-                    } else if (val.getClass().isArray()) {
-                        List notEmptyList = Arrays.stream(ArrayUtil.toArray(val))
-                                .filter(Objects::nonNull).collect(Collectors.toList());
-                        return path.in(notEmptyList).not();
                     } else {
-                        throw new IllegalArgumentException("Value Must be Collection or Array Instance!");
+                        throw JpaMinusException.getException("Value Must be Collection Instance!");
                     }
                 };
             }
@@ -109,18 +110,6 @@ public final class SpecificationFactory {
                 return (Specification<T>) (root, query, cb) -> {
                     Path path = root.get(fieldName);
                     return cb.isNull(path);
-                };
-            case BETWEEN:
-                return (Specification<T>) (root, query, cb) -> {
-                    Path path = root.get(fieldName);
-                    List<Object> bound = Arrays.asList(ArrayUtil.toArray(val));
-                    return cb.between(path, (Comparable) bound.get(0), (Comparable) bound.get(1));
-                };
-            case NOT_BETWEEN:
-                return (Specification<T>) (root, query, cb) -> {
-                    Path path = root.get(fieldName);
-                    List<Object> bound = Arrays.asList(ArrayUtil.toArray(val));
-                    return cb.between(path, (Comparable) bound.get(0), (Comparable) bound.get(1)).not();
                 };
             default:
                 break;

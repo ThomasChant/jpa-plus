@@ -3,6 +3,7 @@ package com.ct.condition.core;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Predicate;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -271,30 +272,27 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
     @Override
     public <X extends Comparable<? super X>> Child in(R field, X... array) {
         if(array.length == 0){
-            throw new IllegalArgumentException("Array should not be empty");
+            throw JpaMinusException.getException("Array should not be empty");
         }
-        this.specification = getSpecification(SpecificationFactory.createSpec(Handler.IN, columnToString(field), array));
-        return typedThis;
+        return in(field, Arrays.asList(array));
     }
 
     /**
      * 在数组中不存在
-     * in("a", 1, 2) 等价于 a in (1,2)
+     * notIn("a", 1, 2) 等价于 a not in (1,2)
      */
     @Override
     public <X extends Comparable<? super X>> Child notIn(R field, X... array) {
         if(array.length == 0){
-            throw new IllegalArgumentException("Array should not be empty");
+            throw JpaMinusException.getException("Array should not be empty");
         }
-        this.specification = getSpecification(SpecificationFactory.createSpec(Handler.NOT_IN, columnToString(field), array));
-        return typedThis;
+        return notIn(field,Arrays.asList(array));
     }
 
     @Override
     public <X extends Comparable<? super X>> Child between(R field, X low, X up) {
         if(low != null || up != null){
-            Object[] val = new Object[]{low,up};
-            this.specification = getSpecification(SpecificationFactory.createSpec(Handler.BETWEEN, columnToString(field), val));
+            return this.ge(field,low).le(field,up);
         }
         return typedThis;
     }
@@ -302,8 +300,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
     @Override
     public <X extends Comparable<? super X>> Child notBetween(R field, X low, X up) {
         if(low != null || up != null){
-            Object[] val = new Object[]{low,up};
-            this.specification = getSpecification(SpecificationFactory.createSpec(Handler.NOT_BETWEEN, columnToString(field), val));
+            return this.lt(field,low).or().gt(field,up);
         }
         return typedThis;
     }
