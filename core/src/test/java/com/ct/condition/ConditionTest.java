@@ -1,6 +1,6 @@
-package com.ct.wrapper; 
+package com.ct.condition;
 
-import com.ct.wrapper.core.Conditions;
+import com.ct.condition.core.Conditions;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

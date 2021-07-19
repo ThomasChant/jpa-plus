@@ -1,4 +1,4 @@
-package com.ct.wrapper;
+package com.ct.condition;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;

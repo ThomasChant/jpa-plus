@@ -1,4 +1,4 @@
-package com.ct.wrapper;
+package com.ct.condition;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

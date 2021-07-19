@@ -1,10 +1,9 @@
-package com.ct.wrapper.core;
+package com.ct.condition.core;
 
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;

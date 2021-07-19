@@ -1,4 +1,4 @@
-package com.ct.wrapper.core;
+package com.ct.condition.core;
 
 import org.springframework.data.jpa.domain.Specification;
 
