@@ -1,8 +1,5 @@
-package com.ct.wrapper;
+package com.ct.wrapper.core;
 
-
-import com.ct.bean.SuperBean;
-import com.ct.util.StringUtil;
 
 /**
  * LambdaColumn
@@ -10,7 +7,7 @@ import com.ct.util.StringUtil;
  * @author chentao
  * @date 2021/7/14
  */
-public interface LambdaColumn<T extends SuperBean<Long>> {
+public interface LambdaColumnConverter<T> {
 
     String GET = "get";
     String IS = "is";

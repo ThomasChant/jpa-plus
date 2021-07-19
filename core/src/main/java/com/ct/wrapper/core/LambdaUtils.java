@@ -1,8 +1,6 @@
 
-package com.ct.wrapper;
+package com.ct.wrapper.core;
 
-
-import com.ct.exception.BaseRuntimeException;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationTargetException;
@@ -29,7 +27,7 @@ public final class LambdaUtils {
             return  ((SerializedLambda) method.invoke(func));
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
-            throw BaseRuntimeException.getException("can not extract method of func");
+            throw new RuntimeException("can not extract method of func");
         }
     }
 

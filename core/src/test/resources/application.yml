@@ -1,0 +1,10 @@
+spring:
+  jpa:
+    # 控制台输出sql
+    show-sql: true
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.0.11.21:33067/rj-platform?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&serverTimezone=GMT%2B8&generateSimpleParameterMetadata=true&allowPublicKeyRetrieval=true
+    username: root
+    password: root

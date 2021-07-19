@@ -1,4 +1,4 @@
-package com.ct.wrapper;
+package com.ct.wrapper.core;
 
 
 import java.io.Serializable;

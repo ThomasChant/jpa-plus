@@ -1,7 +1,5 @@
-package com.ct.wrapper;
+package com.ct.wrapper.core;
 
-import com.ct.bean.SuperBean;
-import com.ct.exception.BaseRuntimeException;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Path;
@@ -20,18 +18,18 @@ import java.util.stream.Collectors;
  * @date 2021/7/6
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractWrapper<Child extends AbstractWrapper<Child,R,T>, R, T extends SuperBean<Long>>
-        implements Wrapper<Child, R, T> {
+public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,T>, R, T>
+        implements Condition<Child, R, T> {
 
     private final Child typedThis = (Child)this;
     private Specification<T> specification;
     private volatile Predicate.BooleanOperator operator;
 
-    public AbstractWrapper() {
+    public AbstractCondition() {
         this(Predicate.BooleanOperator.AND);
     }
 
-    private AbstractWrapper(Predicate.BooleanOperator operator) {
+    private AbstractCondition(Predicate.BooleanOperator operator) {
         this.operator = operator;
         this.specification = (Specification<T>) (root, query, criteriaBuilder) -> null;
     }
@@ -40,7 +38,7 @@ public abstract class AbstractWrapper<Child extends AbstractWrapper<Child,R,T>, 
      * 调用链最后调用的方法，返回该condition
      */
     @Override
-    public Specification<T> get() {
+    public Specification<T> toSpec() {
         return specification;
     }
 
@@ -60,7 +58,7 @@ public abstract class AbstractWrapper<Child extends AbstractWrapper<Child,R,T>, 
     public Child and(Consumer<Child> consumer) {
         Child wrapper = instance();
         consumer.accept(wrapper);
-        this.mergeSpecification(wrapper.get(), Predicate.BooleanOperator.AND);
+        this.mergeSpecification(wrapper.toSpec(), Predicate.BooleanOperator.AND);
         return typedThis;
     }
 
@@ -89,7 +87,7 @@ public abstract class AbstractWrapper<Child extends AbstractWrapper<Child,R,T>, 
     public Child or(Consumer<Child> consumer) {
         Child wrapper = instance();
         consumer.accept(wrapper);
-        this.mergeSpecification(wrapper.get(), Predicate.BooleanOperator.OR);
+        this.mergeSpecification(wrapper.toSpec(), Predicate.BooleanOperator.OR);
         return typedThis;
     }
 
@@ -278,7 +276,7 @@ public abstract class AbstractWrapper<Child extends AbstractWrapper<Child,R,T>, 
     @Override
     public <X extends Comparable<? super X>> Child in(R field, X... array) {
         if(array.length == 0){
-            throw BaseRuntimeException.getException("Array should not be empty");
+            throw new IllegalArgumentException("Array should not be empty");
         }
         this.specification = getSpecification(SpecificationFactory.createSpec(Handler.IN, columnToString(field), array));
         return typedThis;
@@ -291,7 +289,7 @@ public abstract class AbstractWrapper<Child extends AbstractWrapper<Child,R,T>, 
     @Override
     public <X extends Comparable<? super X>> Child notIn(R field, X... array) {
         if(array.length == 0){
-            throw BaseRuntimeException.getException("Array should not be empty");
+            throw new IllegalArgumentException("Array should not be empty");
         }
         this.specification = getSpecification(SpecificationFactory.createSpec(Handler.NOT_IN, columnToString(field), array));
         return typedThis;
@@ -317,215 +315,17 @@ public abstract class AbstractWrapper<Child extends AbstractWrapper<Child,R,T>, 
 
     private void mergeSpecification(Specification<T> s, Predicate.BooleanOperator operator) {
         if(s != null){
-            this.specification = operator == Predicate.BooleanOperator.AND ? s.and(specification) :  s.or(specification) ;
+            this.specification = operator == Predicate.BooleanOperator.AND ? this.specification.and(s) :  this.specification.or(s) ;
         }
     }
 
 
     private Specification<T> getSpecification(Specification<T> spec) {
-        if(spec == null){
-            return this.specification;
-        }else {
-            return operator == Predicate.BooleanOperator.AND ? spec.and(this.specification) : spec.or(this.specification);
-        }
+        mergeSpecification(spec, this.operator);
+        return this.specification;
     }
 
 
-    private static class SpecificationFactory {
-        public static <T> Specification<T> createSpec(Handler handler, String fieldName, Object val) {
-            if (fieldName == null) {
-                throw BaseRuntimeException.getException("filedName cannot null");
-            }
-            if (val == null && handler != Handler.IS_NOT_NULL && handler != Handler.IS_NULL) {
-                return null;
-            }
-            switch (handler) {
-                case EQUAL:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.equal(path, val);
-                    };
-                case NOT_EQUAL:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.equal(path, val).not();
-                    };
-                case GE:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.greaterThanOrEqualTo(path, (Comparable) val);
-                    };
-                case GT:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.greaterThan(path, (Comparable) val);
-                    };
-                case LE:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.lessThanOrEqualTo(path, (Comparable) val);
-                    };
-                case LT:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.lessThan(path, (Comparable) val);
-                    };
-                case ALL_LIKE:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.like(path,"%"+ val +"%");
-                    };
-                case LEFT_LIKE:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.like(path,"%"+ val);
-                    };
-                case RIGHT_LIKE:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.like(path, val +"%");
-                    };
-                case IN: {
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = parseRootPath(root,fieldName);
-                        if(val instanceof Collection){
-                            Collection notEmptyList = (List)((Collection) val).stream()
-                                    .filter(e->e!=null).collect(Collectors.toList());
-                            return path.in(notEmptyList);
-                        }else if(val.getClass().isArray()){
-                            List notEmptyList= Arrays.asList(val).stream()
-                                    .filter(e->e!=null).collect(Collectors.toList());
-                            return path.in(notEmptyList);
-                        }else{
-                            throw BaseRuntimeException.getException("Value Must be Collection Instance!");
-                        }
-                    };
-                }
-                case NOT_IN: {
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = parseRootPath(root,fieldName);
-                        if(val instanceof Collection){
-                            Collection notEmptyList= (List)((Collection) val)
-                                    .stream().filter(e->e!=null).collect(Collectors.toList());
-                            return path.in(notEmptyList).not();
-                        }else if(val.getClass().isArray()){
-                            List notEmptyList= Arrays.asList(val).stream().filter(e->e!=null).collect(Collectors.toList());
-                            return path.in(notEmptyList).not();
-                        }else{
-                            throw BaseRuntimeException.getException("Value Must be Collection Instance!");
-                        }
-                    };
-                }
-                case IS_NOT_NULL:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.isNotNull(path);
-                    };
-                case IS_NULL:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        return cb.isNull(path);
-                    };
-                case BETWEEN:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        List<Object> bound = Arrays.asList(val);
-                        return cb.between(path,(Comparable) bound.get(0), (Comparable) bound.get(1));
-                    };
-                case NOT_BETWEEN:
-                    return (Specification<T>) (root, query, cb) -> {
-                        Path path = root.get(fieldName);
-                        List<Object> bound = Arrays.asList(val);
-                        return cb.between(path,(Comparable) bound.get(0), (Comparable) bound.get(1)).not();
-                    };
-                default:
-                    break;
-            }
-            return null;
-        }
-    }
 
-    public static <T> Path parseRootPath(Root<T> root, String attrName){
-        Path path=null;
-        if(attrName.indexOf('.')!=-1){
-            String [] attrArr=attrName.split("\\.");
-            for(int i=0;i<=attrArr.length-1;i++){
-                if(path==null){
-                    path=root.get(attrArr[i]);
-                }else{
-                    path=path.get(attrArr[i]);
-                }
-            }
-        }else{
-            path=root.get(attrName);
-        }
-        return path;
-    }
 
-    public enum Handler {
-
-        /**
-         * 等于
-         */
-        EQUAL,
-        /**
-         * 不等于
-         */
-        NOT_EQUAL,
-        /**
-         * 小于
-         */
-        LT,
-        /**
-         * 小于等于
-         */
-        LE,
-        /**
-         * 大于
-         */
-        GT,
-        /**
-         * 大于等于
-         */
-        GE,
-        /**
-         * 全匹配
-         */
-        ALL_LIKE,
-        /**
-         * 左匹配
-         */
-        LEFT_LIKE,
-        /**
-         * 右匹配
-         */
-        RIGHT_LIKE,
-        /**
-         * 在...之内
-         */
-        IN,
-        /**
-         * 不在...之内
-         */
-        NOT_IN,
-
-        /**
-         * 为空
-         */
-        IS_NULL,
-        /**
-         * 不为空
-         */
-        IS_NOT_NULL,
-
-        /**
-         * 在...之间
-         */
-        BETWEEN,
-
-        /**
-         * 不在...之间
-         */
-        NOT_BETWEEN
-    }
 }

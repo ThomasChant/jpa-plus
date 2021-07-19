@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true" scanPeriod="1 seconds">
+    <contextName>jpaplus</contextName>
+    <property name="log.path" value="log"/>
+    <property name="log.pattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n" />
+    <property name="maxHistory" value="30"/>
+    <property name="maxFileSize" value="200MB"/>
+    <property name="totalSizeCap" value="30GB"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- info日志 -->
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}${file.separator}info.log</file>
+        <encoder>
+            <pattern>
+                ${log.pattern}
+            </pattern>
+        </encoder>
+        <!-- 滚动策略 按照日期生成日志存档文件，并进行zip压缩-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}${file.separator}%d{yyyy-MM-dd,aux}${file.separator}info-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>${maxHistory}</maxHistory>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+            <totalSizeCap>${totalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- warn日志 -->
+    <appender name="WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}${file.separator}warn.log</file>
+        <!-- 过滤日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>
+                ${log.pattern}
+            </pattern>
+        </encoder>
+        <!-- 滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}${file.separator}%d{yyyy-MM-dd,aux}${file.separator}warn-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>${maxHistory}</maxHistory>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+            <totalSizeCap>${totalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- error日志 -->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}${file.separator}error.log</file>
+        <!-- 过滤日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>
+                ${log.pattern}
+            </pattern>
+        </encoder>
+        <!-- 滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}${file.separator}%d{yyyy-MM-dd,aux}${file.separator}error-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>${maxHistory}</maxHistory>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+            <totalSizeCap>${totalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+    <!-- show parameters for hibernate sql 专为 Hibernate 定制 -->
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder"  level="TRACE"/>
+<!--    <logger name="org.hibernate.type.descriptor.sql.BasicExtractor"  level="DEBUG"/>-->
+<!--    <logger name="org.hibernate.SQL" level="DEBUG" />-->
+    <logger name="org.hibernate.engine.QueryParameters" level="TRACE" />
+    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="TRACE" />
+    <!-- show parameters for jdbcTemplate sql 专为 jdbcTemplate 定制 -->
+<!--    <logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG" />-->
+<!--    <logger name="org.springframework.jdbc.core.StatementCreatorUtils" level="TRACE" />-->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="INFO"/>
+        <appender-ref ref="ERROR"/>
+        <appender-ref ref="WARN"/>
+    </root>
+
+</configuration>

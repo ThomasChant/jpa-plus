@@ -1,6 +1,5 @@
-package com.ct.wrapper;
+package com.ct.wrapper.core;
 
-import com.ct.bean.SuperBean;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Collection;
@@ -12,8 +11,8 @@ import java.util.function.Consumer;
  * @author chentao
  * @date 2021/7/8
  */
-public interface Wrapper<Child extends Wrapper<Child,R,T>, R, T extends SuperBean<Long>> {
-    Specification<T> get();
+public interface Condition<Child extends Condition<Child,R,T>, R, T> {
+    Specification<T> toSpec();
 
     Child and(Consumer<Child> consumer);
 

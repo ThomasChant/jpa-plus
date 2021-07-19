@@ -16,7 +16,9 @@ ext {
             jsqlparserVersion = '4.0',
             junitVersion = '5.7.2',
             commonsLangVersion = '3.10',
-            commonsBeanutilsVersion ='1.9.4'
+            commonsBeanutilsVersion ='1.9.4',
+            druidVersion = '1.1.22',
+            mysqlVersion = '8.0.19'
     ]
 }
 buildscript {
@@ -37,9 +39,9 @@ buildscript {
 
     dependencies {
         classpath "io.freefair.gradle:lombok-plugin:$lombokVersion"
-        classpath "org.junit.platform:junit-platform-gradle-plugin:$junitPlatformVersion"
+//        classpath "org.junit.platform:junit-platform-gradle-plugin:$junitPlatformVersion"
         classpath "io.spring.gradle:dependency-management-plugin:$dependencyManagementVersion"
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+//        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7.1"
 
     }
@@ -72,8 +74,11 @@ subprojects {
 //    }
     dependencies {
         compile("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
-        compile("org.apache.commons:commons-lang3:${commonsLangVersion}")
-        compile("commons-beanutils:commons-beanutils:${commonsBeanutilsVersion}")
+        testCompile "mysql:mysql-connector-java:${mysqlVersion}"
+        testCompile("com.alibaba:druid-spring-boot-starter:${druidVersion}")
+
+//        compile("org.apache.commons:commons-lang3:${commonsLangVersion}")
+//        compile("commons-beanutils:commons-beanutils:${commonsBeanutilsVersion}")
     }
 
     tasks.withType(JavaCompile) {

@@ -1,4 +1,4 @@
-rootProject.name = 'jpaplus'
+rootProject.name = 'jpa-minus'
 include 'core'
 include 'generator'
 
