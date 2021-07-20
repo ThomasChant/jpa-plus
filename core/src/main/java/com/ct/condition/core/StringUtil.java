@@ -21,4 +21,15 @@ public class StringUtil {
         return str;
     }
 
+
+    /**
+     * 判断是否为空字符串
+     * @param s
+     * @return
+     */
+    public static boolean isEmpty(String s){
+        return s == null || s.isEmpty();
+    }
+
+
 }

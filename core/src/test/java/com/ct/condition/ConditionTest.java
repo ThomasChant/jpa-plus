@@ -17,7 +17,7 @@ import java.util.List;
 * @since <pre>7月 16, 2021</pre> 
 * @version 1.0 
 */
-@SpringBootTest(classes = App.class)
+@SpringBootTest
 @RunWith(value = SpringRunner.class)
 public class ConditionTest {
 
@@ -188,5 +188,17 @@ public class ConditionTest {
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(1, all.size());
+    }
+
+    @Test
+    public void testDynamicQuery(){
+        Long id = null;
+        String username = "";
+        Specification<User> spec = Conditions.use(User.class)
+                .ge("id",id)
+                .leftLike("username", username)
+                .toSpec();
+        List<User> all = userRepository.findAll(spec);
+        Assert.assertEquals(4, all.size());
     }
 } 

@@ -272,7 +272,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
     @Override
     public <X extends Comparable<? super X>> Child in(R field, X... array) {
         if(array.length == 0){
-            throw JpaMinusException.getException("Array should not be empty");
+            throw JpaPlusException.getException("Array should not be empty");
         }
         return in(field, Arrays.asList(array));
     }
@@ -284,7 +284,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
     @Override
     public <X extends Comparable<? super X>> Child notIn(R field, X... array) {
         if(array.length == 0){
-            throw JpaMinusException.getException("Array should not be empty");
+            throw JpaPlusException.getException("Array should not be empty");
         }
         return notIn(field,Arrays.asList(array));
     }

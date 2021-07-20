@@ -21,7 +21,7 @@ import java.util.List;
 * @since <pre>7月 16, 2021</pre> 
 * @version 1.0 
 */
-@SpringBootTest(classes = App.class)
+@SpringBootTest
 @RunWith(value = SpringRunner.class)
 public class LambdaConditionTest {
 

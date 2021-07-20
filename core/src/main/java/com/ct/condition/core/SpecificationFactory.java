@@ -4,7 +4,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +25,7 @@ final class SpecificationFactory {
      */
     public static <T> Specification<T> createSpec(Handler handler, String fieldName, Object val) {
         if (fieldName == null) {
-            throw JpaMinusException.getException("fieldName cannot null");
+            throw JpaPlusException.getException("fieldName cannot be null");
         }
         if (val == null && handler != Handler.IS_NOT_NULL && handler != Handler.IS_NULL) {
             return null;
@@ -85,7 +84,7 @@ final class SpecificationFactory {
                                 .filter(Objects::nonNull).collect(Collectors.toList());
                         return path.in(notEmptyList);
                     } else {
-                        throw JpaMinusException.getException("Value Must be Collection Instance!");
+                        throw JpaPlusException.getException("Value Must be Collection Instance!");
                     }
                 };
             }
@@ -97,7 +96,7 @@ final class SpecificationFactory {
                                 .filter(Objects::nonNull).collect(Collectors.toList());
                         return path.in(notEmptyList).not();
                     } else {
-                        throw JpaMinusException.getException("Value Must be Collection Instance!");
+                        throw JpaPlusException.getException("Value Must be Collection Instance!");
                     }
                 };
             }
