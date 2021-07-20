@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 /**
- * Wrapper
+ * Condition
  *
  * @author chentao
  * @date 2021/7/6
@@ -48,7 +48,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
      * 等价于：
      * (a = 1 && b = 2) and (c = 1 and d = 1)
      * @param consumer
-     * @return Wrapper
+     * @return Condition
      */
     @Override
     public Child and(Consumer<Child> consumer) {
@@ -103,7 +103,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
      * a = 1 or b = 1
      *
      *  or()如果放在在调用链的末尾，将被忽略
-     * @return Wrapper
+     * @return Condition
      */
     @Override
     public Child or() {
@@ -129,7 +129,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
      * @param field
      * @param val
      * @param <X>
-     * @return Wrapper
+     * @return Condition
      */
     @Override
     public <X extends Comparable<? super X>> Child ge(R field, X val) {

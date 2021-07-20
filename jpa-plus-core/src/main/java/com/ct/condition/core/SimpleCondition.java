@@ -2,7 +2,7 @@ package com.ct.condition.core;
 
 
 /**
- * Wrapper
+ * SimpleCondition
  *
  * @author chentao
  * @date 2021/7/6

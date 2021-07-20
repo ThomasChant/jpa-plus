@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
+ * 构造Specification的工厂类
  * @author chentao
  */
 @SuppressWarnings("unchecked")

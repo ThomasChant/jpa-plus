@@ -2,7 +2,7 @@ package com.ct.condition.core;
 
 
 /**
- * SimpleLambdaCondition
+ * 通过lambda调用
  *
  * @author chentao
  * @date 2021/7/14
