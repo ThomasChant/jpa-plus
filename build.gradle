@@ -1,7 +1,7 @@
 import java.time.LocalDateTime
 
 allprojects {
-    group = 'com.github.ThomasChant'
+    group = 'com.github.ThomasChant.jpa-plus'
     version = "0.1"
 }
 
@@ -27,9 +27,6 @@ buildscript {
         junitPlatformVersion = "1.2.0"
         dependencyManagementVersion = "1.0.9.RELEASE"
         springBootVersion = "2.2.6.RELEASE"
-
-        mvnRepoUser = "deployment"
-        mvnRepoPwd = "deploy123456"
     }
 
     repositories {
@@ -136,8 +133,8 @@ subprojects {
     publishing {
         repositories {
             maven {
-                def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
 
                 credentials {
@@ -198,50 +195,6 @@ subprojects {
         }
     }
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project {
-                    name 'jpa-plus'
-                    packaging 'jar'
-                    // optionally artifactId can be defined here
-                    description 'An enhanced toolkit for spring data jpa to simplify jpa specification query.'
-                    url 'http://www.example.com/example-application'
-
-                    scm {
-                        connection 'scm:git:git@github.com:ThomasChant/jpa-plus.git'
-                        developerConnection 'scm:git:git@github.com:ThomasChant/jpa-plus.git'
-                        url 'https://github.com/ThomasChant/jpa-plus'
-                    }
-
-                    licenses {
-                        license {
-                            name 'The Apache License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id 'ThomasChant'
-                            name 'ct'
-                            email 'xgct0505@qq.com'
-                        }
-                    }
-                }
-            }
-        }
-    }
     signing {
         sign publishing.publications.mavenJava
     }
