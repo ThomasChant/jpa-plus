@@ -1,8 +1,8 @@
 import java.time.LocalDateTime
 
 allprojects {
-    group = 'com.github.ThomasChant.jpa-plus'
-    version = "0.1"
+    group = 'io.github.ThomasChant'
+    version = "0.2"
 }
 
 ext {
@@ -40,11 +40,20 @@ buildscript {
         classpath "io.spring.gradle:dependency-management-plugin:$dependencyManagementVersion"
 //        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7.1"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
 
     }
 }
 
 description = "this component is used for simpling jpa specification query"
+
+apply plugin: 'io.codearte.nexus-staging'
+nexusStaging {
+    serverUrl = "https://s01.oss.sonatype.org/service/local/" //required only for projects registered in Sonatype after 2021-02-24
+    packageGroup = project.getGroup() //optional if packageGroup == project.getGroup()
+//    stagingProfileId = "315709310d5efc" //when not defined will be got from server using "packageGroup"
+}
+
 
 subprojects {
     apply plugin: 'java-library'
@@ -52,7 +61,6 @@ subprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'maven'
     apply plugin: "io.freefair.lombok"
-//    apply plugin: 'com.github.hierynomus.license'
 
     sourceCompatibility = "${javaVersion}"
     targetCompatibility = "${javaVersion}"
@@ -76,6 +84,8 @@ subprojects {
     }
 
     jar {
+        //ignore the config file
+        exclude "gradle.properties"
         into("META-INF/") {
             from rootProject.file("LICENSE")
         }
@@ -133,13 +143,13 @@ subprojects {
     publishing {
         repositories {
             maven {
-                def releasesRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl= "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
 
                 credentials {
-                    username ossrhUsername
-                    password ossrhPassword
+                    username project.nexusUsername
+                    password project.nexusPassword
                 }
             }
         }
@@ -158,8 +168,8 @@ subprojects {
                     url = 'https://github.com/ThomasChant/jpa-plus'
 
                     scm {
-                        connection = 'scm:git@github.com:Codearte/gradle-nexus-staging-plugin.git'
-                        developerConnection = 'scm:git@github.com:Codearte/gradle-nexus-staging-plugin.git'
+                        connection = 'git@github.com:ThomasChant/jpa-plus.git'
+                        developerConnection = 'git@github.com:ThomasChant/jpa-plus.git'
                         url = 'https://github.com/ThomasChant/jpa-plus'
                     }
 
