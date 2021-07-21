@@ -93,7 +93,7 @@ Specification<User> spec = Conditions.lambdaUse(User.class)
                 .toSpec();
 ```
 
-### Uuse specification
+### Use specification
 
 ```java
   List<User> all = userRepository.findAll(spec);
