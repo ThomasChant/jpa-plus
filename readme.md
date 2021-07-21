@@ -1,8 +1,28 @@
 # jpa-plus
 ## What is it?
-this project is used for making it easy to use specification of spring data jpa, you can build specification use fluent api
+his project is used for making it easy to use specification of spring data jpa, you can build specification use fluent api
 
-## api
+##  How to install?
+
+### build with gradle
+
+```groovy
+compile 'io.github.ThomasChant:jpa-plus-core:latestVersion'
+```
+
+### build with maven
+
+```xml
+<dependency>
+            <groupId>io.github.ThomasChant</groupId>
+            <artifactId>jpa-plus-core</artifactId>
+            <version>latestVersion</version>
+</dependency>
+```
+
+
+
+## Fluent api
 
 | Api                             | Remark                                              |
 | ------------------------------- | --------------------------------------------------- |
@@ -50,7 +70,7 @@ public interface UserRepository extends JpaRepository<User,Long>, JpaSpecificati
 }
 ```
 
-### build Specification
+### Build Specification
 
 #### Use common fluent api 
 
@@ -62,7 +82,7 @@ Specification<User> spec = Conditions.use(User.class)
                 .toSpec();
 ```
 
-#### Or use lambda api
+#### Use lambda api
 
 ```java
 Specification<User> spec = Conditions.lambdaUse(User.class)
@@ -73,9 +93,7 @@ Specification<User> spec = Conditions.lambdaUse(User.class)
                 .toSpec();
 ```
 
-
-
-### use specification
+### Uuse specification
 
 ```java
   List<User> all = userRepository.findAll(spec);
