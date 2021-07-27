@@ -7,7 +7,7 @@ his project is used for making it easy to use specification of spring data jpa, 
 ### build with gradle
 
 ```groovy
-compile 'io.github.ThomasChant:jpa-plus-core:latestVersion'
+compile 'io.github.ThomasChant:jpa-plus-core:${latestVersion}'
 ```
 
 ### build with maven
@@ -16,7 +16,7 @@ compile 'io.github.ThomasChant:jpa-plus-core:latestVersion'
 <dependency>
             <groupId>io.github.ThomasChant</groupId>
             <artifactId>jpa-plus-core</artifactId>
-            <version>latestVersion</version>
+            <version>${latestVersion}</version>
 </dependency>
 ```
 
