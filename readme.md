@@ -1,6 +1,6 @@
 # jpa-plus
 ## What is it?
-his project is used for making it easy to use specification of spring data jpa, you can build specification use fluent api
+this project is used for making it easy to use specification of spring data jpa, you can build specification use fluent api
 
 ##  How to install?
 
