@@ -4,4 +4,6 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile "mysql:mysql-connector-java:${mysqlVersion}"
     testCompile("com.alibaba:druid-spring-boot-starter:${druidVersion}")
+    testRuntime('com.h2database:h2:+')
+
 }

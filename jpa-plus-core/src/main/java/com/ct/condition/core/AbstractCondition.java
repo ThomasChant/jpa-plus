@@ -5,7 +5,9 @@ import org.springframework.data.jpa.domain.Specification;
 import javax.persistence.criteria.Predicate;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Condition
@@ -55,6 +57,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
         Child wrapper = instance();
         consumer.accept(wrapper);
         this.mergeSpecification(wrapper.toSpec(), Predicate.BooleanOperator.AND);
+        this.operator = Predicate.BooleanOperator.AND;
         return typedThis;
     }
 
@@ -67,7 +70,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
 
     /**
      *
-     * 嵌套or查询，和调用链中上一个条件构成或的关系
+     * 嵌套or查询，参数里的条件和调用链中上一个条件构成或的关系
      * 如：
      * .eq("a", 1)
      * .eq("b", 1)
@@ -75,7 +78,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
      * .or(i->i.eq("f",1))
      * .get();
      * 等价于：
-     * or(((a = 1 && b = 2) or (c = 1 and d = 1)) and f = 1)
+     * a = 1 && b = 2 or (c = 1 and d = 1) or f = 1
      * @param consumer
      * @return Child
      */
@@ -84,6 +87,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
         Child wrapper = instance();
         consumer.accept(wrapper);
         this.mergeSpecification(wrapper.toSpec(), Predicate.BooleanOperator.OR);
+        this.operator = Predicate.BooleanOperator.OR;
         return typedThis;
     }
 
@@ -102,23 +106,27 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
      * 等价于
      * a = 1 or b = 1
      *
-     *  or()如果放在在调用链的末尾，将被忽略
-     * @return Condition
+     *  or()如果放在在调用链的末尾或开头，都将被忽略
+     * @return Wrapper
      */
     @Override
     public Child or() {
-        this.mergeSpecification(null, Predicate.BooleanOperator.OR);
+//        this.mergeSpecification(null, Predicate.BooleanOperator.OR);
         this.operator = Predicate.BooleanOperator.OR;
         return typedThis;
     }
 
     /**
-     * and()的作用是将或操作变成与操作
+     * and()的作用是将前后两个表达式变成与操作，并且后续调用链也将
+     * 使用与操作，除非使用or()或or(Consumer)改变
+     * 如：
+     *  eq("a", 1).or().eq("b", 1).and().eq("c",1).get()
+     * 等价于
+     *  a = 1 or b = 1 and c = 1
      * @return
      */
     @Override
     public Child and() {
-        this.mergeSpecification(null, Predicate.BooleanOperator.AND);
         this.operator = Predicate.BooleanOperator.AND;
         return typedThis;
     }
@@ -250,6 +258,9 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
      */
     @Override
     public <X extends Comparable<? super X>> Child in(R field, Collection<X> collection) {
+        if(collection == null || collection.isEmpty()){
+            throw JpaPlusException.getException("Collection cannot be empty");
+        }
         this.specification = getSpecification(SpecificationFactory.createSpec(Handler.IN, columnToString(field), collection));
         return typedThis;
     }
@@ -261,6 +272,9 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
      */
     @Override
     public <X extends Comparable<? super X>> Child notIn(R field, Collection<X> collection) {
+        if(collection.size() == 0){
+            throw JpaPlusException.getException("Collection should not be empty");
+        }
         this.specification = getSpecification(SpecificationFactory.createSpec(Handler.NOT_IN, columnToString(field), collection));
         return typedThis;
     }
@@ -273,6 +287,9 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
     public <X extends Comparable<? super X>> Child in(R field, X... array) {
         if(array.length == 0){
             throw JpaPlusException.getException("Array should not be empty");
+        }
+        if(Stream.of(array).noneMatch(Objects::nonNull)){
+            throw JpaPlusException.getException("All element in array is null");
         }
         return in(field, Arrays.asList(array));
     }
@@ -296,6 +313,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
         }
         return typedThis;
     }
+
 
     @Override
     public <X extends Comparable<? super X>> Child notBetween(R field, X low, X up) {
