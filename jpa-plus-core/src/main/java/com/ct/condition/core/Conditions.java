@@ -9,7 +9,7 @@ package com.ct.condition.core;
  */
 public final class Conditions {
 
-    public static <T> SimpleCondition<T> use(){
+    public static <T> SimpleCondition<T> use(Class<T> clzz){
         return new SimpleCondition<>();
     }
 
