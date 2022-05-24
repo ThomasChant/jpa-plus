@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /** 
@@ -26,7 +27,6 @@ import java.util.List;
 @SpringBootTest(classes = App.class)
 @RunWith(value = SpringRunner.class)
 @ActiveProfiles("test")
-@SuppressWarnings("unchecked")
 public class ConditionTest {
 
     @Autowired
@@ -46,25 +46,25 @@ public class ConditionTest {
     @Test
     public void testEq() throws Exception {
 
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .eq("realname", "")
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
         Assert.assertEquals(0, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .eq("id", 1)
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(1, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .eq("id", 5)
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(0, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .eq("realname", null)
                 .toSpec();
         all = userRepository.findAll(spec);
@@ -73,7 +73,7 @@ public class ConditionTest {
 
     @Test
     public void testAnd() throws Exception {
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .eq("id", 2L)
                 .and(i->i.eq("username", "lisi"))
                 .and()
@@ -85,7 +85,7 @@ public class ConditionTest {
 
     @Test
     public void testOr() throws Exception {
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .or()
                 .eq("id", 2L)
                 .or(i->i.eq("username", "wangwu"))
@@ -99,7 +99,7 @@ public class ConditionTest {
 
     @Test
     public void testOr1() throws Exception {
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .eq("id", 1L)
                 .or(i->i.eq("username", "lisi"))
                 .toSpec();
@@ -109,7 +109,7 @@ public class ConditionTest {
 
     @Test
     public void testOrAnd() throws Exception {
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .or()
                 .eq("id", 1)
                 .or(i->i.eq("id", 2))
@@ -127,7 +127,7 @@ public class ConditionTest {
     public void testNestOr() throws Exception {
 
         // (id = 2 and username = 'lisi') and id == 1 or (id == 3 and username != 'zhaoliu') and username != 'zhaoliu'
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .or(i->i.eq("id", 2).notEq("username","lisi"))
                 .and()
                 .eq("id", 1)
@@ -141,7 +141,7 @@ public class ConditionTest {
 
     @Test
     public void testNestAnd() throws Exception {
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .and()
                 .and(i->i.eq("id", 2).notEq("username","lisi"))
                 .and()
@@ -157,7 +157,7 @@ public class ConditionTest {
 
     @Test
     public void testNestAndOr() throws Exception {
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .and(i->i.eq("id", 1).or().notEq("id",2))
                 .eq("id", 1)
                 .or(i->i.eq("id", 3).and().notEq("username","zhaoliu"))
@@ -169,29 +169,29 @@ public class ConditionTest {
 
     @Test
     public void testLike() throws Exception {
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .rightLike("username", "lis")
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
         Assert.assertEquals(1, all.size());
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .leftLike("username", "isi")
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(1, all.size());
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .allLike("username", "is")
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(1, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .allLike("username", "")
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(4, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .allLike("username", null)
                 .toSpec();
         all = userRepository.findAll(spec);
@@ -201,33 +201,33 @@ public class ConditionTest {
 
     @Test
     public void testIn() throws Exception {
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .in("id", 1,2)
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
         Assert.assertEquals(2, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .in("id", Arrays.asList(1,2))
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(2, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .in("username", Arrays.asList("lisi","zhangsan"))
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(2, all.size());
 
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .notIn("username", Arrays.asList("lisi","zhangsan"))
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(2, all.size());
 
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .notIn("username", "lisi","zhangsan")
                 .toSpec();
         all = userRepository.findAll(spec);
@@ -237,39 +237,39 @@ public class ConditionTest {
 
     @Test
     public void testCompare() throws Exception {
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .ge("id",1)
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
         Assert.assertEquals(4, all.size());
 
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .le("id",1)
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(1, all.size());
 
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .lt("id",1)
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(0, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .gt("id",1)
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(3, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .notEq("id",1)
                 .toSpec();
         all = userRepository.findAll(spec);
         Assert.assertEquals(3, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .eq("id",1)
                 .toSpec();
         all = userRepository.findAll(spec);
@@ -278,7 +278,7 @@ public class ConditionTest {
 
     @Test
     public void testBetween(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .between("id",1,3)
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
@@ -288,7 +288,7 @@ public class ConditionTest {
 
     @Test
     public void testNotBetween(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .notBetween("id",1,3)
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
@@ -297,7 +297,7 @@ public class ConditionTest {
 
     @Test
     public void testNull(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .isNull("realname")
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
@@ -306,7 +306,7 @@ public class ConditionTest {
 
     @Test
     public void testNotNull(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .isNotNull("realname")
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
@@ -315,7 +315,7 @@ public class ConditionTest {
 
     @Test
     public void testValNull(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .eq("id",null)
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
@@ -324,13 +324,13 @@ public class ConditionTest {
 
     @Test
     public void testValBlank(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .eq("realname","")
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
         Assert.assertEquals(0, all.size());
 
-        spec = Conditions.use()
+        spec = Conditions.use(User.class)
                 .eq("realname",null)
                 .toSpec();
         all = userRepository.findAll(spec);
@@ -339,7 +339,7 @@ public class ConditionTest {
 
     @Test
     public void testInNull(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .in("id",null, 1)
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
@@ -348,7 +348,7 @@ public class ConditionTest {
 
     @Test(expected = JpaPlusException.class)
     public void testEmptyCollection(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .in("id", new ArrayList<Integer>())
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
@@ -357,7 +357,7 @@ public class ConditionTest {
 
     @Test(expected = JpaPlusException.class)
     public void testEmptyArray(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .in("id", new Integer[]{})
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
@@ -366,7 +366,7 @@ public class ConditionTest {
 
     @Test(expected = JpaPlusException.class)
     public void testAllNull(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .in("id", null, null)
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
@@ -374,11 +374,21 @@ public class ConditionTest {
 
     @Test
     public void testInContainNull(){
-        Specification spec = Conditions.use()
+        Specification spec = Conditions.use(User.class)
                 .in("realname","李四", null)
                 .toSpec();
         List<User> all = userRepository.findAll(spec);
         Assert.assertEquals(1, all.size());
     }
 
+
+    @Test
+    public void testCollectionNull(){
+        Collection a = null;
+        Specification spec = Conditions.use(User.class)
+                .in("realname", a)
+                .toSpec();
+        List<User> all = userRepository.findAll(spec);
+        Assert.assertEquals(4, all.size());
+    }
 } 

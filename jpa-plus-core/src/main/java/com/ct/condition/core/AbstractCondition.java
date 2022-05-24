@@ -258,7 +258,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
      */
     @Override
     public <X extends Comparable<? super X>> Child in(R field, Collection<X> collection) {
-        if(collection == null || collection.isEmpty()){
+        if(collection != null && collection.isEmpty()){
             throw JpaPlusException.getException("Collection cannot be empty");
         }
         this.specification = getSpecification(SpecificationFactory.createSpec(Handler.IN, columnToString(field), collection));
@@ -272,7 +272,7 @@ public abstract class AbstractCondition<Child extends AbstractCondition<Child,R,
      */
     @Override
     public <X extends Comparable<? super X>> Child notIn(R field, Collection<X> collection) {
-        if(collection.size() == 0){
+        if(collection != null && collection.isEmpty()){
             throw JpaPlusException.getException("Collection should not be empty");
         }
         this.specification = getSpecification(SpecificationFactory.createSpec(Handler.NOT_IN, columnToString(field), collection));
